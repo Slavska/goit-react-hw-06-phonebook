@@ -1,10 +1,16 @@
 import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { addContact } from '../../redux/slice';
+import { selectContacts } from '../../redux/selectors';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import { nanoid } from 'nanoid';
 import css from './ContactForm.module.css';
-import PropTypes from 'prop-types';
 
-export function ContactForm({ addContact }) {
+export function ContactForm() {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  const dispatch = useDispatch();
+  const allContacts = useSelector(selectContacts);
 
   const addChange = e => {
     const { name, value } = e.target;
@@ -21,8 +27,25 @@ export function ContactForm({ addContact }) {
   };
   const addSubmit = e => {
     e.preventDefault();
-    addContact(name, number);
-    e.target.reset();
+    if (!name || !number) {
+      return Notify.failure(`The field is empty`);
+    }
+    if (
+      allContacts.some(
+        contact =>
+          contact.name.toLowerCase().trim() === name.toLowerCase().trim()
+      )
+    ) {
+      return Notify.failure(`${name} is already in contacts!`);
+    }
+    const newContact = {
+      id: nanoid(),
+      name,
+      number,
+    };
+    dispatch(addContact(newContact));
+    setName('');
+    setNumber('');
   };
   return (
     <form className={css.form} onSubmit={addSubmit}>
@@ -33,7 +56,7 @@ export function ContactForm({ addContact }) {
           type="text"
           name="name"
           onChange={addChange}
-          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+          pattern="[A-Za-zА-Яа-яЁё]{2,20}"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
           required
         />
@@ -45,7 +68,7 @@ export function ContactForm({ addContact }) {
           type="tel"
           name="number"
           onChange={addChange}
-          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+          pattern="\+?[0-9\s\-\(\)]+"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
         />
@@ -56,6 +79,3 @@ export function ContactForm({ addContact }) {
     </form>
   );
 }
-ContactForm.propTypes = {
-  addContact: PropTypes.func.isRequired,
-};
