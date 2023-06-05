@@ -3,10 +3,10 @@ import { setFilter } from 'redux/slice';
 import css from './Filter.module.css';
 
 export const Filter = () => {
-  const dispatcher = useDispatch();
+  const dispatch = useDispatch();
 
   const onChange = e => {
-    dispatcher(setFilter(e.target.value));
+    dispatch(setFilter(e.target.value));
   };
 
   return (

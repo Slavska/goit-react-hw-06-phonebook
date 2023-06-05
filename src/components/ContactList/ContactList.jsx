@@ -4,7 +4,7 @@ import { deleteContact } from 'redux/slice';
 import css from './ContactList.module.css';
 
 export const ContactList = () => {
-  const dispatcher = useDispatch();
+  const dispatch = useDispatch();
   const contacts = useSelector(selectContacts);
   const setFilter = useSelector(selectFilter);
 
@@ -20,7 +20,7 @@ export const ContactList = () => {
           {name}: {number}
           <button
             className={css.btn_delete}
-            onClick={() => dispatcher(deleteContact(id))}
+            onClick={() => dispatch(deleteContact(id))}
           >
             Delete
           </button>
