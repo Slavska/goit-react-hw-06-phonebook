@@ -6,7 +6,7 @@ const initialState = {
 };
 
 export const contactSlice = createSlice({
-  name: 'phone',
+  name: 'contact',
   initialState,
   reducers: {
     addContact: (state, { payload }) => {
