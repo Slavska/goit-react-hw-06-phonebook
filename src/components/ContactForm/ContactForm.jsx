@@ -27,25 +27,29 @@ export function ContactForm() {
   };
   const addSubmit = e => {
     e.preventDefault();
-    if (!name || !number) {
-      return Notify.failure(`The field is empty`);
-    }
     if (
       allContacts.some(
         contact =>
           contact.name.toLowerCase().trim() === name.toLowerCase().trim()
       )
     ) {
+      e.target.reset();
       return Notify.failure(`${name} is already in contacts!`);
+    } else if (allContacts.some(contact => contact.number === number)) {
+      e.target.reset();
+      const nameAdded = allContacts.find(contact => contact.number === number);
+      return Notify.failure(
+        `${number} is already in contacts with ${nameAdded.name}!`
+      );
+    } else {
+      const newContact = {
+        id: nanoid(),
+        name,
+        number,
+      };
+      dispatch(addContact(newContact));
+      e.target.reset();
     }
-    const newContact = {
-      id: nanoid(),
-      name,
-      number,
-    };
-    dispatch(addContact(newContact));
-    setName('');
-    setNumber('');
   };
   return (
     <form className={css.form} onSubmit={addSubmit}>
